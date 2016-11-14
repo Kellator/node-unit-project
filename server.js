@@ -7,11 +7,21 @@ var Storage = {
         this.setId += 1;
         return item;
     },
-    delete: function(item) {
-        console.log("at least it's getting here");
-        console.log(this.item);
-        delete this.item;
+    delete: function(id) {
+        var index = this.items.findIndex(function(item) {
+            return item.id == id;
+        });
+        if (index == -1) {
+            return false;
+        }
+        this.items.splice(index,1);
+        return true;
+        // var item = itemToRemove;
+        // console.log(item);
+        // // this.items.splice(index, 1);
+        // console.log("at least it's getting here");
     },
+    change: function() {},
 };
 
 var createStorage = function() {
@@ -39,6 +49,7 @@ var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
 app.post('/items', jsonParser, function(request, response) {
+    //console.log(request);
     if (!('name' in request.body)) {
         return response.sendStatus(400);
     }
@@ -50,16 +61,26 @@ app.delete('/items/:id', jsonParser, function(request, response) {
     console.log("deleting");
     var id = request.params.id;
     console.log(id);
-    if (!(id in storage.items)) {
-        console.log("not Deleted");
+    if (!id) {
+        return response.sendStatus(500);
+    }
+    if (storage.delete(id)) {
+        console.log("true")
+        return response.status(200).json({status:"success"});
+    }
+    else {
+        console.log("false");
         return response.sendStatus(404);
     }
-    else if (id in storage.items) {
-        storage.delete(storage.items.item);
-        console.log("deleted");
-        return response.sendStatus(200);    
-    }
 });
+
+// app.put('items/:id', jsonParser, function(request, response) {
+//     console.log("changing");
+//     if (id in storage.items) {
+//         storage.change(storage.items.item);
+//         return response.sendStatus(200);
+//     }
+// })
 app.listen(process.env.PORT || 8080, process.env.IP);
 //able to access index not id.  need to acces id and subtract 1 to get index to remove?
 
