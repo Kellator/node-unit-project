@@ -7,10 +7,11 @@ var Storage = {
         this.setId += 1;
         return item;
     },
-    delete: function(name) {
-        var item = {name: name, id:this.setId};
-        this.items.splice(item.id);
-    }
+    delete: function(item) {
+        console.log("at least it's getting here");
+        console.log(this.item);
+        delete this.item;
+    },
 };
 
 var createStorage = function() {
@@ -21,6 +22,7 @@ var createStorage = function() {
 };
 
 var storage = createStorage();
+
 
 storage.add('Broad beans');
 storage.add('Tomatoes');
@@ -40,19 +42,26 @@ app.post('/items', jsonParser, function(request, response) {
     if (!('name' in request.body)) {
         return response.sendStatus(400);
     }
-    
     var item = storage.add(request.body.name);
     response.status(201).json(item);
 });
 
 app.delete('/items/:id', jsonParser, function(request, response) {
-    if (!('id' in request.body)) {
+    console.log("deleting");
+    var id = request.params.id;
+    console.log(id);
+    if (!(id in storage.items)) {
+        console.log("not Deleted");
         return response.sendStatus(404);
-        console.log("at least it's making it here");
     }
-    var item = storage.delete(request.body.name);
-    response.status(200).json(item);
+    else if (id in storage.items) {
+        storage.delete(storage.items.item);
+        console.log("deleted");
+        return response.sendStatus(200);    
+    }
 });
 app.listen(process.env.PORT || 8080, process.env.IP);
+//able to access index not id.  need to acces id and subtract 1 to get index to remove?
+
  
 
