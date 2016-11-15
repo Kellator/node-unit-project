@@ -17,8 +17,9 @@ var Storage = {
         this.items.splice(index,1);
         return true;
     },
-    change: function(id) {
+    change: function(name, id) {
         console.log("howdy");
+        console.log("i am name " + name);
         console.log("i am id " + id);
         var index = this.items.findIndex(function(item) {
             return item.id == id;
@@ -86,12 +87,11 @@ app.put('/items/:id', jsonParser, function(request, response) {
     var id = request.params.id;
     var name = request.body.name;
     var item = {name: name, id: id};
-    storage.change(item);
     console.log(item);
     if (!id) {
         return response.sendStatus(500);
     }
-    if (storage.change(id)) {
+    if (storage.change(name, id)) {
         return response.status(200).json(item);
     }
     else {
