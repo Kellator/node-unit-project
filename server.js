@@ -27,6 +27,8 @@ var Storage = {
         if (index == -1) {
             return false;
         }
+        var newItem = {name: name, id: id};
+        this. items.splice(index, 1, newItem);
         //splice in new name into existing array object... 
         //index targets appropriate array item... 
         console.log(this.items[index]);
