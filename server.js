@@ -16,12 +16,20 @@ var Storage = {
         }
         this.items.splice(index,1);
         return true;
-        // var item = itemToRemove;
-        // console.log(item);
-        // // this.items.splice(index, 1);
-        // console.log("at least it's getting here");
     },
-    change: function() {},
+    change: function(id) {
+        console.log("howdy");
+        console.log("i am id " + id);
+        var index = this.items.findIndex(function(item) {
+            return item.id == id;
+        });
+        if (index == -1) {
+            return false;
+        }
+        //splice in new name into existing array object... 
+        //index targets appropriate array item... 
+        console.log(this.items[index]);
+    },
 };
 
 var createStorage = function() {
@@ -32,7 +40,6 @@ var createStorage = function() {
 };
 
 var storage = createStorage();
-
 
 storage.add('Broad beans');
 storage.add('Tomatoes');
@@ -65,7 +72,7 @@ app.delete('/items/:id', jsonParser, function(request, response) {
         return response.sendStatus(500);
     }
     if (storage.delete(id)) {
-        console.log("true")
+        console.log("true");
         return response.status(200).json({status:"success"});
     }
     else {
@@ -74,13 +81,23 @@ app.delete('/items/:id', jsonParser, function(request, response) {
     }
 });
 
-// app.put('items/:id', jsonParser, function(request, response) {
-//     console.log("changing");
-//     if (id in storage.items) {
-//         storage.change(storage.items.item);
-//         return response.sendStatus(200);
-//     }
-// })
+app.put('/items/:id', jsonParser, function(request, response) {
+    console.log("changing");
+    var id = request.params.id;
+    var name = request.body.name;
+    var item = {name: name, id: id};
+    storage.change(item);
+    console.log(item);
+    if (!id) {
+        return response.sendStatus(500);
+    }
+    if (storage.change(id)) {
+        return response.status(200).json(item);
+    }
+    else {
+        return response.sendStatus(404);
+    }
+});
 app.listen(process.env.PORT || 8080, process.env.IP);
 //able to access index not id.  need to acces id and subtract 1 to get index to remove?
 
