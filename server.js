@@ -1,5 +1,5 @@
 var express = require('express');
-
+//creates the storage object with methods to add, remove, and change a shopping list item
 var Storage = {
     add: function(name) {
         var item = {name: name, id: this.setId};
@@ -18,46 +18,43 @@ var Storage = {
         return true;
     },
     change: function(name, id) {
-        console.log("howdy");
-        console.log("i am name " + name);
-        console.log("i am id " + id);
         var index = this.items.findIndex(function(item) {
             return item.id == id;
         });
         if (index == -1) {
             return false;
         }
-        var newItem = {name: name, id: id};
-        this. items.splice(index, 1, newItem);
-        //splice in new name into existing array object... 
-        //index targets appropriate array item... 
-        console.log(this.items[index]);
+        //var newItem = {name: name, id: id};
+        //this.items.splice(index, 1, newItem);
+        this.items[index].name=name;
+        return true;
     },
 };
-
+//creates the actual shopping list
 var createStorage = function() {
     var storage = Object.create(Storage);
     storage.items = [];
     storage.setId = 1;
     return storage;
 };
-
 var storage = createStorage();
-
+//hardcode test items in shopping list
 storage.add('Broad beans');
 storage.add('Tomatoes');
 storage.add('Peppers');
-
+//include express moduld
 var app = express();
+//calls static items from public folder - shopping list items
 app.use(express.static('public'));
-
+//retrieves list of shopping list items
 app.get('/items', function(request, response) {
+    console.log(storage.items);
     response.json(storage.items);
 });
-
+//requires the body-parser module and instructs to use the jsonParser middleware when request are made
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
-
+//add shopping list items based on name entered
 app.post('/items', jsonParser, function(request, response) {
     //console.log(request);
     if (!('name' in request.body)) {
@@ -66,11 +63,9 @@ app.post('/items', jsonParser, function(request, response) {
     var item = storage.add(request.body.name);
     response.status(201).json(item);
 });
-
+//deletes shopping list items based on selected id
 app.delete('/items/:id', jsonParser, function(request, response) {
-    console.log("deleting");
     var id = request.params.id;
-    console.log(id);
     if (!id) {
         return response.sendStatus(500);
     }
@@ -83,13 +78,12 @@ app.delete('/items/:id', jsonParser, function(request, response) {
         return response.sendStatus(404);
     }
 });
-
+//makes changes to existing shopping list items
 app.put('/items/:id', jsonParser, function(request, response) {
-    console.log("changing");
     var id = request.params.id;
     var name = request.body.name;
     var item = {name: name, id: id};
-    console.log(item);
+    //console.log(request.body);
     if (!id) {
         return response.sendStatus(500);
     }
@@ -100,8 +94,12 @@ app.put('/items/:id', jsonParser, function(request, response) {
         return response.sendStatus(404);
     }
 });
+//exports app and storage for testing
+exports.app = app;
+exports.storage = storage;
+
 app.listen(process.env.PORT || 8080, process.env.IP);
-//able to access index not id.  need to acces id and subtract 1 to get index to remove?
+
 
  
 
