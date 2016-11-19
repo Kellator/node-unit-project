@@ -60,15 +60,24 @@ describe('Shopping List', function() {
     it('should edit an item on put', function(done) {
         chai.request(app)
             .put('/items/1')
-            .send({'name': 'Broad beans', 'id': '1'})
+            .send({'name': 'Broad beans', 'id': 1})
             .end(function(err, res) {
                 //console.log(err);
                 should.equal(err, null);
                 res.should.have.status(200);
-                // res.should.be.json;
-                // res.body.should.be.a('object');
-                // res.body.should.have.property('id');
-                // res.body.id.should.equal('2');
+                res.should.be.json;
+                res.body.should.be.a('object');
+                res.body.should.have.property('name');
+                res.body.should.have.property('id');
+                res.body.name.should.be.a('string');
+                storage.items.should.be.a('array');
+                storage.items[0].should.be.a('object');
+                storage.items[0].should.have.property('id');
+                storage.items[0].should.have.property('name');
+                storage.items[0].id.should.be.a('number');
+                storage.items[0].name.should.be.a('string');
+                storage.items[0].name.should.equal('Broad beans');
+                storage.items[0].id.should.equal(1);
                 done();
             });
        
