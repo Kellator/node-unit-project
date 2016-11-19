@@ -89,6 +89,10 @@ describe('Shopping List', function() {
             .end(function(err, res) {
                 should.equal(err, null);
                 res.should.have.status(200);
+                storage.items.should.have.length(3);
+                storage.items.should.be.a('array');
+                res.body.should.be.a('object');
+                res.should.be.json;
                 done();
             });
     });
